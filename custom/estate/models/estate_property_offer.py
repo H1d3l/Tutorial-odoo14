@@ -1,4 +1,5 @@
 from odoo import models,fields,api
+from odoo.exceptions import UserError
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
@@ -38,4 +39,26 @@ class EstatePropertyOffer(models.Model):
             df=  datetime.strptime(dfs,'%Y-%m-%d')       
             di=  datetime.strptime(dis,'%Y-%m-%d')  
             record.validity = abs((df-di).days)
-            
+
+    
+    
+    @api.depends('property_id.buyer_id','property_id.selling_price',)
+    def action_accepted_offer(self):
+        for record in self:
+            if record.property_id.buyer_id.name == False:
+                record.status = 'accepted'
+                record.property_id.buyer_id = record.partner_id
+                record.property_id.selling_price = record.price
+            else:
+                raise UserError("An offer has already been accepted")
+
+              
+
+             
+        
+
+    def action_refused_offer(self):
+        for record in self:
+            record.status = 'refused'
+            record.property_id.buyer_id = None
+            record.property_id.selling_price = None
