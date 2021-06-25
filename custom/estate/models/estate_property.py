@@ -1,6 +1,6 @@
 
 from odoo import models,fields,api
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError,ValidationError
 
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -38,7 +38,7 @@ class EstateProperty(models.Model):
             ('west','West')
         ]
     )
-    active = fields.Boolean(active=True)
+    active = fields.Boolean(default=True)
     status = fields.Selection(
         selection =[
         ('new', 'New'),
@@ -57,6 +57,22 @@ class EstateProperty(models.Model):
     offer_ids = fields.One2many('estate.property.offer', 'property_id')
     total_area = fields.Integer(compute='_compute_total_area')
     best_price = fields.Float(compute='_compute_best_price')
+
+
+
+    _sql_constraints = [
+        (
+            'expected_price_positive',
+            'CHECK(expected_price > 0)',
+            'O valor esperado deve ser maior que 0'
+        ),
+        (
+            'selling_price_positive',
+            'CHECK(selling_price > 0)',
+            'O valor de venda deve ser maior que 0'
+        ),
+
+    ]
 
     #calcula a area total da propriedade
     @api.depends("living_area","garden_area")
@@ -104,4 +120,20 @@ class EstateProperty(models.Model):
             else:
                 raise UserError("Canceled properties cannot be sold")
         return True
+
+
+
+
+
+
+"""
+    @api.constrains('expected_price','selling_price')
+    def _check_selling_price(self):
+        for record in self:
+            if record.selling_price < record.expected_price * 0.9:
+                raise ValidationError("O valor de venda não pode ser inferior a 90%% do preço esperado.")
+
+"""
+
+
         

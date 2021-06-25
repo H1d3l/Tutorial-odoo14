@@ -21,6 +21,13 @@ class EstatePropertyOffer(models.Model):
     validity = fields.Integer(default=7)
     date_deadline = fields.Date(compute='_compute_date_deadline',inverse='_inverse_date_deadline',default= lambda self:date.today()+relativedelta(days=+7))
 
+    _sql_constraints = [
+        (
+            'price_positive',
+            'CHECK(price > 0)',
+            'O valor da oferta deve ser positivo'
+        ),
+    ]
 
 #Corrigir bug no campo date deadline
     @api.depends('date_deadline')
@@ -40,25 +47,28 @@ class EstatePropertyOffer(models.Model):
             di=  datetime.strptime(dis,'%Y-%m-%d')  
             record.validity = abs((df-di).days)
 
-    
-    
-    @api.depends('property_id.buyer_id','property_id.selling_price',)
+
+
+    @api.depends('property_id.offer_ids')
     def action_accepted_offer(self):
         for record in self:
-            if record.property_id.buyer_id.name == False:
+            print(record.mapped('property_id.offer_ids.status'))
+
+            if 'accepted' in record.mapped('property_id.offer_ids.status'):
+                raise UserError("Uma oferta já foi aceita")
+
+            else:
                 record.status = 'accepted'
                 record.property_id.buyer_id = record.partner_id
                 record.property_id.selling_price = record.price
-            else:
-                raise UserError("An offer has already been accepted")
 
-              
-
-             
-        
+                        
+            
 
     def action_refused_offer(self):
         for record in self:
             record.status = 'refused'
-            record.property_id.buyer_id = None
-            record.property_id.selling_price = None
+
+         
+        
+
