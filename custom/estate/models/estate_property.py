@@ -9,11 +9,13 @@ from dateutil.relativedelta import relativedelta
 class EstateProperty(models.Model):
     _name = 'estate.property'
     _description = 'Estate Property'
+    _order = "id desc"
 
     name = fields.Char(required = True)
     property_type_id = fields.Many2one(
         'estate.property.type',
         string='Property Type',
+        
         )
     property_tag_ids = fields.Many2many(
         'estate.property.tag',
@@ -23,7 +25,7 @@ class EstateProperty(models.Model):
     postcode = fields.Char()
     date_availability = fields.Date(copy=False,default= lambda self:date.today()+relativedelta(months=+3))
     expected_price = fields.Float(required = True)
-    selling_price = fields.Float(readonly = True,copy=False)
+    selling_price = fields.Float(readonly = True,copy=False,default=0)
     bedrooms = fields.Integer(default=2)
     living_area = fields.Integer()
     facades = fields.Integer()
@@ -39,7 +41,7 @@ class EstateProperty(models.Model):
         ]
     )
     active = fields.Boolean(default=True)
-    status = fields.Selection(
+    state = fields.Selection(
         selection =[
         ('new', 'New'),
         ('offer received', 'Offer Received'),
@@ -66,9 +68,10 @@ class EstateProperty(models.Model):
             'CHECK(expected_price > 0)',
             'O valor esperado deve ser maior que 0'
         ),
+
         (
             'selling_price_positive',
-            'CHECK(selling_price > 0)',
+            'CHECK(selling_price > 0 WHERE state!=new)',
             'O valor de venda deve ser maior que 0'
         ),
 
@@ -106,8 +109,8 @@ class EstateProperty(models.Model):
 
     def action_cancel_property(self):
         for record in self:
-            if record.status != 'sold':
-                record.status = 'canceled'
+            if record.state != 'sold':
+                record.state = 'canceled'
             else:
                 raise UserError(" Sold properties cannot be canceled")
         return True
@@ -115,8 +118,8 @@ class EstateProperty(models.Model):
 
     def action_sold_property(self):
         for record in self:
-            if record.status != 'canceled':
-                record.status = 'sold'
+            if record.state != 'canceled':
+                record.state = 'sold'
             else:
                 raise UserError("Canceled properties cannot be sold")
         return True
@@ -126,14 +129,14 @@ class EstateProperty(models.Model):
 
 
 
-"""
-    @api.constrains('expected_price','selling_price')
+    @api.constrains('expected_price','selling_price','offer_ids')
     def _check_selling_price(self):
         for record in self:
-            if record.selling_price < record.expected_price * 0.9:
-                raise ValidationError("O valor de venda não pode ser inferior a 90%% do preço esperado.")
+            if 'accepted' in record.mapped('offer_ids.status'):
+                if record.selling_price < record.expected_price * 0.9:
+                    raise ValidationError("O valor de venda não pode ser inferior a 90% do preço esperado.")
 
-"""
+
 
 
         

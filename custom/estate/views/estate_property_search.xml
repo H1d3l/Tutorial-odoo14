@@ -14,8 +14,8 @@
                 <field name="living_area" string="Living Area (sqm)"/>
                 <field name="facades"/>
                 <separator/>
-                <filter string="Status" name="status" domain="['|',('status', '=', 'new'),
-                ('status', '=', 'offer received')]"/>
+                <filter string="Status" name="state" domain="['|',('state', '=', 'new'),
+                ('state', '=', 'offer received')]"/>
                 <group expand="1" string="Group By">
                     <filter string="Postcode" name="postcode" context="{'group_by':'postcode'}"/>
                 </group>

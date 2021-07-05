@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+
+    <record id="estate_property_type_view_tree" model="ir.ui.view">
+        <field name="name">estate.property.type.tree</field>
+        <field name="model">estate.property.type</field>
+        <field name="arch" type="xml">
+            <tree string="Estate Property Type">
+                <field name="name"/>
+                <field name="sequence" widget='handle'/>
+                
+            </tree>
+        </field>
+    </record>
+
+    <record id="estate_property_type_tree" model="ir.ui.view">
+        <field name="name">estate.property.type.tree</field>
+        <field name="model">estate.property.type</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <header>
+                </header>
+                <h1 class="text-capitalize"><field name="name"/></h1>
+                <notebook>
+                    <page name="info_property" string="Properties">
+                        <field name="property_ids">
+                            <tree>
+                                <field name="name"/>
+                                <field name="expected_price"/>
+                                <field name="state"/>
+                            </tree>
+
+                        </field>
+
+                    </page>
+                </notebook>
+
+
+            </form>
+        </field>
+    </record>
+
+
+</odoo>
+

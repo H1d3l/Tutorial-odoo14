@@ -6,20 +6,20 @@
         <field name="model">estate.property</field>
         <field name="arch" type="xml">
 
-
             <form string="Estate Property Form">
                 <header>
-                    <button name="action_sold_property" type="object" string="SOLD"/>
-                    <button name="action_cancel_property" type="object" string="CANCEL"/>
+                    <button name="action_sold_property" type="object" string="SOLD" states="new,offer accepted"/>
+                    <button name="action_cancel_property" type="object" string="CANCEL" states="new,offer accepted"  />
+                    <field name="state" widget="statusbar" statusbar_visible="new,offer received,offer accepted,sold"/>
+                        
 
                 </header>
                 <h1 class="text-capitalize"><field name="name"/></h1>
                 
-                <field name="property_tag_ids" widget="many2many_tags" />
+                <field name="property_tag_ids" widget="many2many_tags" options="{'color_field':'color' }"/>
 
                 <group col="4">
-                    <field name="status"/>
-                    <field name="property_type_id"/>
+                    <field name="property_type_id" options="{'no_create':True, 'can_write':False }"/>
                     <field name="postcode"/>
                     <field name="date_availability" string="Available From"/>
                     <field name="expected_price"/>
@@ -37,17 +37,16 @@
                             <field name="facades"/>
                             <field name="garage"/>
                             <field name="garden"/>
-                            <field name="garden_area" string="Garden Area(sqm)"/>
-                            <field name="garden_orientation"/>
+                            <field name="garden_area" string="Garden Area(sqm)" attrs="{'invisible': [('garden', '=', False)]}"/>
+                            <field name="garden_orientation" attrs="{'invisible': [('garden', '=', False)]}"/>
                             <field name="total_area"/>
                             <field name="active"/>
-                            <field name="status"/>
                         </group>
                         
                     </page>
                     <page name="offer_info" string="Offer">
                         <tree>
-                            <field name="offer_ids"/>
+                            <field name="offer_ids" attrs="{'readonly': [('state', 'in', ('offer accepted','sold','canceled'))]}"/>
                         </tree>
                     </page>
 
@@ -76,8 +75,8 @@
                 <field name="partner_id"/>
                 <field name="validity"/>
                 <field name="date_deadline"/>
-                <button name="action_accepted_offer" type="object" icon="fa-check"/>
-                <button name="action_refused_offer"  type="object" icon="fa-times"/>
+                <button name="action_accepted_offer" type="object" icon="fa-check" attrs="{'invisible': [('status', 'in', ('accepted','refused'))]}"/>
+                <button name="action_refused_offer"  type="object" icon="fa-times" attrs="{'invisible': [('status', 'in', ('accepted','refused'))]}"/>
                 <field name="status"/>
             </tree>
         </field>
@@ -98,6 +97,38 @@
                     <field name="validity"/>
                     <field name="date_deadline"/>
                 </group>
+            </form>
+        </field>
+    </record>
+
+
+
+
+
+    <record id="estate_property_type_tree" model="ir.ui.view">
+        <field name="name">estate.property.type.tree</field>
+        <field name="model">estate.property.type</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <header>
+                </header>
+                <h1 class="text-capitalize"><field name="name"/></h1>
+                <notebook>
+                    <page name="info_property" string="Properties">
+                        <field name="property_ids">
+                            <tree>
+                                <field name="name"/>
+                                <field name="expected_price"/>
+                                <field name="state"/>
+
+                            </tree>
+
+                        </field>
+
+                    </page>
+                </notebook>
+
+
             </form>
         </field>
     </record>
