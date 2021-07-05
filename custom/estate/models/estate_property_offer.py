@@ -30,6 +30,9 @@ class EstatePropertyOffer(models.Model):
             'O valor da oferta deve ser positivo'
         ),
     ]
+    
+        
+    
 
 #Corrigir bug no campo date deadline
     @api.depends('date_deadline')
@@ -65,15 +68,12 @@ class EstatePropertyOffer(models.Model):
                 record.property_id.state = 'offer accepted'
                 record.property_id.selling_price = record.price
         return True
-
-                        
-            
+          
 
     def action_refused_offer(self):
         for record in self:
             record.status = 'refused'
         return True
 
-         
-        
+
 
