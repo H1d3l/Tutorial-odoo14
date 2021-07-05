@@ -10,8 +10,7 @@
                 <header>
                     <button name="action_sold_property" type="object" string="SOLD" states="new,offer accepted"/>
                     <button name="action_cancel_property" type="object" string="CANCEL" states="new,offer accepted"  />
-                    <field name="state" />
-                        
+                    <field name="state" widget="statusbar" statusbar_visible="new,offer received,offer accepted,sold"/>                        
 
                 </header>
                 <h1 class="text-capitalize"><field name="name"/></h1>
