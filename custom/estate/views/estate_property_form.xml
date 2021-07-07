@@ -72,6 +72,8 @@
             <tree string="teste" editable="bottom" decoration-danger="status=='refused'" decoration-success="status=='accepted'">
                 <field name="price"/>
                 <field name="partner_id"/>
+                <field name="property_type_id"/>
+
                 <field name="validity"/>
                 <field name="date_deadline"/>
                 <button name="action_accepted_offer" type="object" icon="fa-check" attrs="{'invisible': [('status', 'in', ('accepted','refused'))]}"/>
