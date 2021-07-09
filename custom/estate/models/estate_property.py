@@ -77,6 +77,15 @@ class EstateProperty(models.Model):
         ),
 
     ]
+    
+    
+    def unlink(self):
+        for record in self:
+            if record.state=='new' or record.state=='canceled':
+                return super(EstateProperty,self).unlink()
+            else:
+                raise UserError("Impossivel deletar a propriedade {0} registro na qual o estado é {1}".format(record.name,record.state))
+        
 
     #calcula a area total da propriedade
     @api.depends("living_area","garden_area")

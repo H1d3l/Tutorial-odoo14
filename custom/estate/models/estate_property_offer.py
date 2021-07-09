@@ -35,8 +35,24 @@ class EstatePropertyOffer(models.Model):
     ]
     
         
-    
+    @api.model
+    def create(self,vals):
+        inst = self.env['estate.property'].browse(vals['property_id'])
+        for record in self:
+            
+            min_price = min(record.mapped('property_id.offer_ids.price'))
+            print(min_price,record.price)
 
+            if record.price < min_price:
+                raise UserError("Valor não pode ser menor")
+        
+        for record in inst:
+            record.state = 'offer received'
+            print(record.mapped('offer_ids.price'), min(record.mapped('offer_ids.price')),record.offer_ids.price)
+
+        return super().create(vals)
+            
+            
 #Corrigir bug no campo date deadline
     @api.depends('date_deadline')
     def _compute_date_deadline(self):
