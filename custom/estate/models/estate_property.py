@@ -12,6 +12,7 @@ class EstateProperty(models.Model):
     _order = "id desc"
 
     name = fields.Char(required = True)
+    
     property_type_id = fields.Many2one(
         'estate.property.type',
         string='Property Type',

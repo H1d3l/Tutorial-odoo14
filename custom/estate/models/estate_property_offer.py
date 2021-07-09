@@ -20,6 +20,9 @@ class EstatePropertyOffer(models.Model):
     property_id = fields.Many2one(
         'estate.property',
         string='Property',required = True,ondelete='cascade')
+                                                           
+    property_type_id = fields.Many2one(related="property_id.property_type_id",store=True)
+
     validity = fields.Integer(default=7)
     date_deadline = fields.Date(compute='_compute_date_deadline',inverse='_inverse_date_deadline',default= lambda self:date.today()+relativedelta(days=+7))
 
@@ -74,6 +77,7 @@ class EstatePropertyOffer(models.Model):
         for record in self:
             record.status = 'refused'
         return True
+
 
 
 
